@@ -190,12 +190,6 @@ export const CoinsList = () => {
 
   return (
     <div className='p-3'>
-      <CoinsActions
-        selected={selected}
-        onCancel={handleCancelBidBluk}
-        onBuy={handleBuyBluk}
-        onSell={handleSellBluk}
-      />
       <div className='row'>
         <div className='col-12'>
           <div>
@@ -207,6 +201,14 @@ export const CoinsList = () => {
               />
             </div>
           </div>
+          {selected.length > 0 && (
+            <CoinsActions
+              selected={selected}
+              onCancel={handleCancelBidBluk}
+              onBuy={handleBuyBluk}
+              onSell={handleSellBluk}
+            />
+          )}
           <div
             className='mb-5 overflow-hidden'
             style={{
