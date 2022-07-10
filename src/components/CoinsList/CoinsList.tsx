@@ -25,6 +25,7 @@ export const CoinsList = () => {
     lastMessage,
     allTheList,
     setAllTheList,
+    setCoinsList,
   } = useCoinData()
   const [searchText, setSearchText] = useState<string>('')
   const [value] = useDebounce(searchText, 1000)
@@ -55,14 +56,20 @@ export const CoinsList = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value])
 
+  // CLEAR SELECTED
   const clearSelected = useCallback(() => {
     const newList = map(allTheList, (item) => {
       return {...item, isSelect: false}
     })
     setAllTheList(newList)
+    const newCoinList = map(coinsList, (item) => {
+      return {...item, isSelect: false}
+    })
+    setCoinsList(newCoinList)
     setSelected([])
-  }, [allTheList, setAllTheList])
+  }, [allTheList, coinsList, setAllTheList, setCoinsList])
 
+  // HANDLE SELECTED
   const handleSelect = useCallback(
     (symbol: string) => {
       let currentIndex = 0
@@ -92,21 +99,24 @@ export const CoinsList = () => {
     clearSelected()
   }, [clearSelected])
 
+  const handleCancelSingle = useCallback((coin: CoinAttr) => {
+    setShowModel(true)
+    setSingleSelectedBid(coin.symbol)
+  }, [])
+
   const handleBuyBluk = useCallback(() => {
     setShowBuySellForm({
       type: 'buy',
       show: true,
     })
-    clearSelected()
-  }, [clearSelected])
+  }, [])
 
   const handleSellBluk = useCallback(() => {
     setShowBuySellForm({
       type: 'sell',
       show: true,
     })
-    clearSelected()
-  }, [clearSelected])
+  }, [])
 
   const handleBuySingle = useCallback((coin: CoinAttr) => {
     setPrice({
@@ -125,11 +135,6 @@ export const CoinsList = () => {
       type: 'sell',
       show: true,
     })
-  }, [])
-
-  const handleCancelSingle = useCallback((coin: CoinAttr) => {
-    setShowModel(true)
-    setSingleSelectedBid(coin.symbol)
   }, [])
 
   const handleConfirmCancellation = useCallback(() => {
@@ -153,6 +158,7 @@ export const CoinsList = () => {
     })
   }, [])
 
+  // SUBMIT
   const handleSubmit = useCallback(
     (values: FormParams) => {
       try {
@@ -163,16 +169,19 @@ export const CoinsList = () => {
           text: 'Submited Successfully',
           variant: 'success',
         })
+        clearSelected()
       } catch {
         setShowAlert({
           show: true,
           text: 'Wrong data',
           variant: 'danger',
         })
+      } finally {
         handleHideFormModel()
+        clearSelected()
       }
     },
-    [handleHideFormModel]
+    [clearSelected, handleHideFormModel]
   )
 
   return (
