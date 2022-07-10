@@ -1,7 +1,7 @@
 import axios from 'axios'
 import {useCallback, useEffect, useMemo, useState} from 'react'
-import {CoinAttr} from '../CoinsList'
-import {chunk} from 'lodash'
+import {chunk, map} from 'lodash'
+import {CoinAttr} from '../ModelTypes'
 
 const INITALLENGTH: number = 20
 export const useCoinData = () => {
@@ -59,7 +59,7 @@ export const useCoinData = () => {
       try {
         const {data}: {data: CoinAttr[]} = await axios.get(process.env.REACT_APP_API_URL)
         if (data) {
-          const dataWithIsSelect: CoinAttr[] = data.map((item) => {
+          const dataWithIsSelect: CoinAttr[] = map(data, (item) => {
             return {...item, isSelect: false}
           })
           setAllTheList(dataWithIsSelect)
@@ -103,6 +103,7 @@ export const useCoinData = () => {
 
   useEffect(() => {}, [pageCount])
 
+  // fetch on scroll
   const fetchMoreData = useCallback(() => {
     if (pageCount < pageChuck.length) {
       setHasMore(true)

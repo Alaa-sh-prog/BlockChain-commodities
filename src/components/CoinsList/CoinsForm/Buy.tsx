@@ -2,21 +2,32 @@ import {useFormik} from 'formik'
 import {Button} from '../../Button/Button'
 import {TextInput} from '../../form/TextInput/TextInput'
 import * as Yup from 'yup'
-import CustomAlert from '../../Alert'
-import {useState} from 'react'
 
-const BuySchema = Yup.object().shape({
-  price: Yup.number()
-    .typeError('you must specify a number')
-    .positive()
-    .min(15, 'Minimum 15 USD')
-    .max(20000, 'Minimum 20000 USD')
-    .required('Price is required'),
-  quantity: Yup.number().min(1, 'Must be greater than 0').required('Quantity is requried'),
-})
+export interface FormParams {
+  price: string
+  quantity: string
+}
 
-export const BuyForm = () => {
-  const [showAlert, setShowAlert] = useState<boolean>(false)
+interface BuyFormProps {
+  minPrice: number
+  maxPrice: number
+  maxQuantity: number
+  onSubmit: (values: FormParams) => void
+}
+
+export const BuyForm = ({minPrice, maxPrice, maxQuantity, onSubmit}: BuyFormProps) => {
+  const BuySchema = Yup.object().shape({
+    price: Yup.number()
+      .typeError('you must specify a number')
+      .positive()
+      .min(minPrice, `Minimum ${minPrice} USD`)
+      .max(maxPrice, `Maximum ${maxPrice} USD`)
+      .required('Price is required'),
+    quantity: Yup.number()
+      .min(1, 'Must be greater than 0')
+      .max(maxQuantity, `Must be less than ${maxQuantity}`)
+      .required('Quantity is requried'),
+  })
   const formik = useFormik({
     validationSchema: BuySchema,
     initialValues: {
@@ -25,8 +36,7 @@ export const BuyForm = () => {
     },
     onSubmit: (values, {resetForm, setSubmitting}) => {
       setSubmitting(true)
-      setShowAlert(true)
-      alert(JSON.stringify(values, null, 2))
+      onSubmit(values)
       setSubmitting(false)
       resetForm()
     },
@@ -39,13 +49,12 @@ export const BuyForm = () => {
         name='price'
         type='text'
         className='mb-3'
-        placeholder='15.0 - 20000.0'
+        placeholder={`${minPrice} - ${maxPrice}`}
         value={formik.values.price}
         onChange={formik.handleChange}
         onBlur={formik.handleBlur}
         errorMessage={formik.errors.price}
         isTouched={formik.touched.price}
-        endAdornment={<i className='bi bi-upload fs-3'></i>}
       />
 
       <TextInput
@@ -60,7 +69,6 @@ export const BuyForm = () => {
         onBlur={formik.handleBlur}
         errorMessage={formik.errors.quantity}
         isTouched={formik.touched.quantity}
-        endAdornment={<i className='bi bi-upload fs-3'></i>}
       />
       <Button
         disabled={
@@ -73,12 +81,6 @@ export const BuyForm = () => {
         {formik.isSubmitting && <div className='spinner-border' role='status'></div>}
         Buy
       </Button>
-      <CustomAlert
-        onHide={() => setShowAlert(false)}
-        open={showAlert}
-        text='Done!'
-        variant='success'
-      />
     </form>
   )
 }

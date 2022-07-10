@@ -1,6 +1,6 @@
 import {ReactNode, useMemo, useRef} from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
-import {CoinAttr} from '../CoinsList/CoinsList'
+import {CoinAttr} from '../CoinsList/ModelTypes'
 import {SpinnerGrow} from '../SpinnerGrow'
 
 interface CustomInfiniteScrollProps {

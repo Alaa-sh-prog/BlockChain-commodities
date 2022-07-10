@@ -1,6 +1,5 @@
-import {forwardRef, ReactNode, DetailedHTMLProps, useCallback, useMemo, useRef} from 'react'
+import {forwardRef, ReactNode, DetailedHTMLProps, useCallback, useMemo} from 'react'
 import clsx from 'clsx'
-import {OverlayTrigger, Tooltip} from 'react-bootstrap-v5'
 
 export type ColorVariant =
   | 'primary'
@@ -26,7 +25,6 @@ export interface ButtonProps extends ButtonElementProps {
   children?: ReactNode
   disabled?: boolean
   variant?: ButtonVariant
-  tooltip?: string
   color?: ColorVariant
   uppercase?: boolean
   size?: ButtonSize
@@ -40,7 +38,6 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       children,
       variant = 'default',
       className,
-      tooltip,
       color,
       size = 'md',
       uppercase = true,
@@ -50,8 +47,6 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref
   ) => {
-    const randomId = useRef<string>(`${Math.random()}`)
-
     const sizeClassName = useMemo(() => {
       switch (size) {
         case 'flush':
@@ -62,16 +57,6 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           return ''
       }
     }, [size])
-
-    const tooltipProps = useMemo(() => {
-      if (tooltip) {
-        return {
-          'data-toggle': 'tooltip',
-          'data-placement': 'top',
-          title: tooltip,
-        }
-      }
-    }, [tooltip])
 
     const getVariant = useCallback(() => {
       return `btn-${variant}`
@@ -94,22 +79,11 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           getColorVariant(),
           className
         )}
-        {...tooltipProps}
         {...props}
       >
         {children}
       </button>
     )
-    if (tooltip) {
-      return (
-        <OverlayTrigger
-          placement='auto'
-          overlay={<Tooltip id={`${tooltip}${randomId.current}`}>{tooltip}</Tooltip>}
-        >
-          {button}
-        </OverlayTrigger>
-      )
-    }
     return button
   }
 )
