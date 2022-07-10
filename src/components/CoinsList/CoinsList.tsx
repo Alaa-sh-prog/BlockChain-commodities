@@ -9,7 +9,7 @@ import CoinCard from './CoinCard'
 import {CoinsActions} from './CoinsAction/CoinsActions'
 import {CustomModel} from '../CustomModel'
 import {FormModel} from './CoinsForm/FormModel'
-import {map} from 'lodash'
+import {map, forEach} from 'lodash'
 import {FormParams} from './CoinsForm/Buy'
 import {AlertParams, BuySellModelParams, CoinAttr, PriceParams} from './ModelTypes'
 
@@ -60,7 +60,7 @@ export const CoinsList = () => {
   const clearSelected = useCallback(() => {
     const oldAllTheList = [...allTheList]
     let currentIndexAll = 0
-    map(selected, (item) => {
+    forEach(selected, (item) => {
       const foundOldAll = oldAllTheList.find((coin, index) => {
         currentIndexAll = index
         return coin.symbol === item
