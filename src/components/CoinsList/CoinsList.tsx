@@ -25,7 +25,6 @@ export const CoinsList = () => {
     lastMessage,
     allTheList,
     setAllTheList,
-    setCoinsList,
   } = useCoinData()
   const [searchText, setSearchText] = useState<string>('')
   const [value] = useDebounce(searchText, 1000)
@@ -59,16 +58,18 @@ export const CoinsList = () => {
 
   // CLEAR SELECTED
   const clearSelected = useCallback(() => {
-    const newList = map(allTheList, (item) => {
-      return {...item, isSelect: false}
+    const oldAllTheList = [...allTheList]
+    let currentIndexAll = 0
+    map(selected, (item) => {
+      const foundOldAll = oldAllTheList.find((coin, index) => {
+        currentIndexAll = index
+        return coin.symbol === item
+      })
+      if (foundOldAll) oldAllTheList[currentIndexAll].isSelect = false
     })
-    setAllTheList(newList)
-    const newCoinList = map(coinsList, (item) => {
-      return {...item, isSelect: false}
-    })
-    setCoinsList(newCoinList)
+    setAllTheList(oldAllTheList)
     setSelected([])
-  }, [allTheList, coinsList, setAllTheList, setCoinsList])
+  }, [allTheList, selected, setAllTheList])
 
   // HANDLE SELECTED
   const handleSelect = useCallback(
@@ -94,11 +95,6 @@ export const CoinsList = () => {
     },
     [allTheList, selected, setAllTheList]
   )
-
-  const handleCancelBidBluk = useCallback(() => {
-    setShowModel(true)
-    clearSelected()
-  }, [clearSelected])
 
   const handleCancelSingle = useCallback((coin: CoinAttr) => {
     setShowModel(true)
@@ -146,7 +142,8 @@ export const CoinsList = () => {
       variant: 'success',
       timer: 3000,
     })
-  }, [])
+    clearSelected()
+  }, [clearSelected])
 
   const handleHideFormModel = useCallback(() => {
     setShowBuySellForm({
@@ -204,7 +201,7 @@ export const CoinsList = () => {
           {selected.length > 0 && (
             <CoinsActions
               selected={selected}
-              onCancel={handleCancelBidBluk}
+              onCancel={() => setShowModel(true)}
               onBuy={handleBuyBluk}
               onSell={handleSellBluk}
             />

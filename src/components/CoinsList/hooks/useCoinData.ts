@@ -132,7 +132,6 @@ export const useCoinData = () => {
       lastMessage,
       allTheList,
       setAllTheList,
-      setCoinsList,
     }),
     [
       refreshList,
@@ -145,7 +144,6 @@ export const useCoinData = () => {
       lastMessage,
       allTheList,
       setAllTheList,
-      setCoinsList,
     ]
   )
 }
