@@ -1,5 +1,5 @@
 import axios from 'axios'
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useCallback, useMemo, useState} from 'react'
 import {chunk, map} from 'lodash'
 import {CoinAttr} from '../ModelTypes'
 
@@ -101,8 +101,6 @@ export const useCoinData = () => {
     [NoData, allTheList, getChunks]
   )
 
-  useEffect(() => {}, [pageCount])
-
   // fetch on scroll
   const fetchMoreData = useCallback(() => {
     if (pageCount < pageChuck.length) {
@@ -134,6 +132,7 @@ export const useCoinData = () => {
       lastMessage,
       allTheList,
       setAllTheList,
+      setCoinsList,
     }),
     [
       refreshList,
@@ -146,6 +145,7 @@ export const useCoinData = () => {
       lastMessage,
       allTheList,
       setAllTheList,
+      setCoinsList,
     ]
   )
 }
