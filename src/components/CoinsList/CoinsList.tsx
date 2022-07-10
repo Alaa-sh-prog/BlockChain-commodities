@@ -35,6 +35,7 @@ export const CoinsList = () => {
     show: false,
     text: '',
     variant: '',
+    timer: 0,
   })
   const [showBuySellForm, setShowBuySellForm] = useState<BuySellModelParams>({
     type: '',
@@ -143,6 +144,7 @@ export const CoinsList = () => {
       show: true,
       text: 'Successfully Canceled',
       variant: 'success',
+      timer: 3000,
     })
   }, [])
 
@@ -168,6 +170,7 @@ export const CoinsList = () => {
           show: true,
           text: 'Submited Successfully',
           variant: 'success',
+          timer: 3000,
         })
         clearSelected()
       } catch {
@@ -175,6 +178,7 @@ export const CoinsList = () => {
           show: true,
           text: 'Wrong data',
           variant: 'danger',
+          timer: 3000,
         })
       } finally {
         handleHideFormModel()
@@ -237,7 +241,15 @@ export const CoinsList = () => {
                 </CustomInfiniteScroll>
               </>
             )}
-            {error && <CustomAlert open={true} variant='danger' text={error} />}
+            {error && (
+              <CustomAlert
+                timer={3000}
+                setShowAlert={setShowAlert}
+                open={true}
+                variant='danger'
+                text={error}
+              />
+            )}
           </div>
         </div>
       </div>
@@ -264,16 +276,11 @@ export const CoinsList = () => {
       />
 
       <CustomAlert
-        onHide={() =>
-          setShowAlert({
-            show: false,
-            text: '',
-            variant: '',
-          })
-        }
+        setShowAlert={setShowAlert}
         open={showAlert.show}
         text={showAlert.text}
         variant={showAlert.variant}
+        timer={showAlert.timer}
       />
     </div>
   )
