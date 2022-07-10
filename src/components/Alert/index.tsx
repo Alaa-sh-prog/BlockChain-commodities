@@ -1,3 +1,6 @@
+import {useEffect} from 'react'
+import {AlertParams} from '../CoinsList/ModelTypes'
+
 export type VariantType =
   | 'primary'
   | 'secondary'
@@ -13,10 +16,25 @@ type AlertType = {
   variant: VariantType
   text: string
   open: boolean
-  onHide?: () => void
+  setShowAlert: (values: AlertParams) => void
+  timer: number
 }
 
-function CustomAlert({variant, text, open, onHide}: AlertType) {
+function CustomAlert({variant, text, open, setShowAlert, timer}: AlertType) {
+  useEffect(() => {
+    const time = setTimeout(() => {
+      setShowAlert({
+        show: false,
+        text: '',
+        variant: '',
+        timer: 0,
+      })
+    }, timer)
+    return () => {
+      clearTimeout(time)
+    }
+  }, [setShowAlert, timer])
+
   return (
     <div className='d-flex position-fixed bottom-0 end-0 translate-x-50 m-3'>
       {open && (
@@ -30,7 +48,14 @@ function CustomAlert({variant, text, open, onHide}: AlertType) {
             className='btn-close'
             data-bs-dismiss='alert'
             aria-label='Close'
-            onClick={onHide}
+            onClick={() => {
+              setShowAlert({
+                show: false,
+                text: '',
+                variant: '',
+                timer: 0,
+              })
+            }}
           ></button>
         </div>
       )}

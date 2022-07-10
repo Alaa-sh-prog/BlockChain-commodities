@@ -40,4 +40,5 @@ export interface AlertParams {
   text: string
   show: boolean
   variant: VariantType
+  timer: number
 }
