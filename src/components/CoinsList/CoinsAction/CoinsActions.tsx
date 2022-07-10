@@ -10,7 +10,7 @@ interface CoinsActionsProps {
 
 export const CoinsActions = ({selected, onBuy, onSell, onCancel}: CoinsActionsProps) => {
   const Buy = useMemo(() => {
-    if (onBuy && selected.length > 0)
+    if (onBuy)
       return (
         <Button size='sm' type='button' onClick={onBuy} variant='primary'>
           {`Buy (${selected.length})`}
@@ -20,7 +20,7 @@ export const CoinsActions = ({selected, onBuy, onSell, onCancel}: CoinsActionsPr
   }, [onBuy, selected.length])
 
   const Sell = useMemo(() => {
-    if (onSell && selected.length > 0)
+    if (onSell)
       return (
         <Button className='ms-3' size='sm' onClick={onSell} variant='danger'>
           {`Sell (${selected.length})`}
@@ -33,11 +33,11 @@ export const CoinsActions = ({selected, onBuy, onSell, onCancel}: CoinsActionsPr
     if (onCancel)
       return (
         <Button size='sm' onClick={onCancel} className='text-muted'>
-          Cancel all Bids
+          {`Cancel all Bids (${selected.length})`}
         </Button>
       )
     else return null
-  }, [onCancel])
+  }, [onCancel, selected.length])
 
   return (
     <>
