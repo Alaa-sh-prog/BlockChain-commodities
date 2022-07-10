@@ -1,37 +1,36 @@
-import {useMemo} from 'react'
+import {ReactNode, useMemo, useRef} from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
-import CoinCard from '../CoinsList/CoinCard'
 import {CoinAttr} from '../CoinsList/CoinsList'
 import {SpinnerGrow} from '../SpinnerGrow'
 
 interface CustomInfiniteScrollProps {
-  currentList?: CoinAttr[] | null
-  searchList?: CoinAttr[] | null
+  currentList: CoinAttr[]
   fetchMoreData: () => void
   hasMore: boolean
   lastMessage: string
+  children: ReactNode
+  scrollThreshold?: number | string
+  height?: string
 }
 
 export const CustomInfiniteScroll = ({
-  searchList,
   currentList,
   fetchMoreData,
   hasMore,
   lastMessage,
+  scrollThreshold,
+  height,
+  children,
 }: CustomInfiniteScrollProps) => {
+  const scrollRef = useRef(null)
   const listLength = useMemo(() => {
-    if (searchList) {
-      return searchList.length
-    }
-    if (currentList) {
-      return currentList.length
-    }
-    return 0
-  }, [searchList, currentList])
+    return currentList.length
+  }, [currentList])
 
   return useMemo(() => {
     return (
       <InfiniteScroll
+        ref={scrollRef}
         dataLength={listLength}
         next={fetchMoreData}
         hasMore={hasMore}
@@ -40,22 +39,16 @@ export const CustomInfiniteScroll = ({
             <SpinnerGrow />
           </div>
         }
-        height='100%'
-        scrollThreshold={0.95}
+        height={height}
+        scrollThreshold={scrollThreshold}
         endMessage={
           <p style={{textAlign: 'center'}}>
             <b>{lastMessage}</b>
           </p>
         }
       >
-        {searchList
-          ? searchList &&
-            searchList.length > 0 &&
-            searchList.map((coin) => <CoinCard key={coin.symbol} coin={coin} />)
-          : currentList &&
-            currentList.length > 0 &&
-            currentList.map((coin) => <CoinCard key={coin.symbol} coin={coin} />)}
+        {children}
       </InfiniteScroll>
     )
-  }, [currentList, fetchMoreData, hasMore, lastMessage, listLength, searchList])
+  }, [children, fetchMoreData, hasMore, height, lastMessage, listLength, scrollThreshold])
 }

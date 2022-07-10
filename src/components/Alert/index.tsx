@@ -1,24 +1,30 @@
-import { Alert } from "react-bootstrap-v5";
-
 type AlertType = {
-  variant:
-    | "primary"
-    | "secondary"
-    | "success"
-    | "danger"
-    | "warning"
-    | "info"
-    | "light"
-    | "dark";
-  text: string;
-};
-
-function CustomAlert({ variant, text }: AlertType) {
-  return (
-    <Alert key={variant} variant={variant}>
-      {text}
-    </Alert>
-  );
+  variant: 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'light' | 'dark'
+  text: string
+  open: boolean
+  onHide?: () => void
 }
 
-export default CustomAlert;
+function CustomAlert({variant, text, open, onHide}: AlertType) {
+  return (
+    <div className='d-flex position-fixed bottom-0 end-0 translate-x-50 m-3'>
+      {open && (
+        <div
+          className={`alert alert-${variant} alert-dismissible fade ${open ? 'show' : ''}`}
+          role='alert'
+        >
+          {text}
+          <button
+            type='button'
+            className='btn-close'
+            data-bs-dismiss='alert'
+            aria-label='Close'
+            onClick={onHide}
+          ></button>
+        </div>
+      )}
+    </div>
+  )
+}
+
+export default CustomAlert

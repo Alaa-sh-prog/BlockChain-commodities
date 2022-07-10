@@ -1,0 +1,15 @@
+.form-control {
+  background-color: $gray;
+  border: none;
+  padding: 16px 16px;
+  color: $muted;
+  &:focus {
+    background-color: $muted; // #31363b
+    border: none;
+    box-shadow: none;
+  }
+}
+form.form-control {
+  background-color: $gray-hover;
+  border: none;
+}

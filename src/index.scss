@@ -37,9 +37,10 @@
 @import '~bootstrap/scss/spinners';
 @import '~bootstrap/scss/utilities/api';
 @import './style/colors/colors';
-@import './style/buttons/base';
-@import './style/base';
+@import './style/buttons/button';
 @import './style/card/card';
+@import './style/form-control/formControl';
+@import './style/base';
 
 body {
   background-color: #171717;

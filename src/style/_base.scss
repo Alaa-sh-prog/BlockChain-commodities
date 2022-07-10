@@ -1,3 +1,9 @@
+p {
+  margin-bottom: 0;
+}
+hr {
+  background-color: $muted;
+}
 .badge-bg-primary {
   background-color: $bg-primary;
 }
@@ -7,4 +13,27 @@
 
 .infinite-scroll-component__outerdiv {
   height: 100%;
+  p {
+    color: $light-gray;
+  }
+}
+
+.nav-link {
+  color: $white;
+  &:hover {
+    color: $primary;
+  }
+}
+
+.nav-tabs .nav-link.active {
+  background-color: transparent;
+}
+
+.modal-content {
+  background-color: $gray;
+  color: $muted;
+  text-align: center;
+  & .modal-header {
+    border-bottom: none;
+  }
 }
