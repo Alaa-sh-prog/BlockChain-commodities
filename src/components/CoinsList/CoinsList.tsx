@@ -7,33 +7,11 @@ import CustomAlert from '../Alert'
 import {CustomInfiniteScroll} from '../CustomInfiniteScroll/CustomInfiniteScroll'
 import CoinCard from './CoinCard'
 import {CoinsActions} from './CoinsAction/CoinsActions'
-import {FormModel} from './CoinsForm/FormModel'
 import {CustomModel} from '../CustomModel'
-
-export interface CoinAttr {
-  symbol: string
-  priceChange: string
-  priceChangePercent: string
-  weightedAvgPrice: string
-  prevClosePrice: string
-  lastPrice: string
-  lastQty: string
-  bidPrice: string
-  bidQty: string
-  askPrice: string
-  askQty: string
-  openPrice: string
-  highPrice: string
-  lowPrice: string
-  volume: string
-  quoteVolume: string
-  openTime: number
-  closeTime: number
-  firstId: number
-  lastId: number
-  count: number
-  isSelect?: boolean
-}
+import {FormModel} from './CoinsForm/FormModel'
+import {map} from 'lodash'
+import {FormParams} from './CoinsForm/Buy'
+import {AlertParams, BuySellModelParams, CoinAttr, PriceParams} from './ModelTypes'
 
 export const CoinsList = () => {
   const {
@@ -52,7 +30,22 @@ export const CoinsList = () => {
   const [value] = useDebounce(searchText, 1000)
   const [selected, setSelected] = useState<string[]>([])
   const [showModel, setShowModel] = useState<boolean>(false)
-  const [showAlert, setShowAlert] = useState<boolean>(false)
+  const [showAlert, setShowAlert] = useState<AlertParams>({
+    show: false,
+    text: '',
+    variant: '',
+  })
+  const [showBuySellForm, setShowBuySellForm] = useState<BuySellModelParams>({
+    type: '',
+    show: false,
+  })
+  const [price, setPrice] = useState<PriceParams>({
+    minPrice: 15,
+    maxPrice: 20000,
+    maxQuantity: 2000,
+  })
+  const [singleSelectedBid, setSingleSelectedBid] = useState<string>('')
+
   useEffect(() => {
     refreshList()
   }, [refreshList])
@@ -61,6 +54,14 @@ export const CoinsList = () => {
     searchList(value)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value])
+
+  const clearSelected = useCallback(() => {
+    const newList = map(allTheList, (item) => {
+      return {...item, isSelect: false}
+    })
+    setAllTheList(newList)
+    setSelected([])
+  }, [allTheList, setAllTheList])
 
   const handleSelect = useCallback(
     (symbol: string) => {
@@ -86,18 +87,102 @@ export const CoinsList = () => {
     [allTheList, selected, setAllTheList]
   )
 
-  const handleCancelBidding = useCallback(() => {
+  const handleCancelBidBluk = useCallback(() => {
     setShowModel(true)
+    clearSelected()
+  }, [clearSelected])
+
+  const handleBuyBluk = useCallback(() => {
+    setShowBuySellForm({
+      type: 'buy',
+      show: true,
+    })
+    clearSelected()
+  }, [clearSelected])
+
+  const handleSellBluk = useCallback(() => {
+    setShowBuySellForm({
+      type: 'sell',
+      show: true,
+    })
+    clearSelected()
+  }, [clearSelected])
+
+  const handleBuySingle = useCallback((coin: CoinAttr) => {
+    setPrice({
+      minPrice: parseFloat(coin.lowPrice),
+      maxPrice: parseFloat(coin.highPrice),
+      maxQuantity: parseFloat(coin.bidQty),
+    })
+    setShowBuySellForm({
+      type: 'buy',
+      show: true,
+    })
   }, [])
 
-  const handleConfirm = useCallback(() => {
-    setShowModel(false)
-    setShowAlert(true)
+  const handleSellSingle = useCallback(() => {
+    setShowBuySellForm({
+      type: 'sell',
+      show: true,
+    })
   }, [])
+
+  const handleCancelSingle = useCallback((coin: CoinAttr) => {
+    setShowModel(true)
+    setSingleSelectedBid(coin.symbol)
+  }, [])
+
+  const handleConfirmCancellation = useCallback(() => {
+    setShowModel(false)
+    setShowAlert({
+      show: true,
+      text: 'Successfully Canceled',
+      variant: 'success',
+    })
+  }, [])
+
+  const handleHideFormModel = useCallback(() => {
+    setShowBuySellForm({
+      type: '',
+      show: false,
+    })
+    setPrice({
+      minPrice: 15,
+      maxPrice: 20000,
+      maxQuantity: 2000,
+    })
+  }, [])
+
+  const handleSubmit = useCallback(
+    (values: FormParams) => {
+      try {
+        alert(JSON.stringify(values, null, 2))
+        handleHideFormModel()
+        setShowAlert({
+          show: true,
+          text: 'Submited Successfully',
+          variant: 'success',
+        })
+      } catch {
+        setShowAlert({
+          show: true,
+          text: 'Wrong data',
+          variant: 'danger',
+        })
+        handleHideFormModel()
+      }
+    },
+    [handleHideFormModel]
+  )
 
   return (
     <div className='p-3'>
-      <CoinsActions selected={selected} onCancel={handleCancelBidding} />
+      <CoinsActions
+        selected={selected}
+        onCancel={handleCancelBidBluk}
+        onBuy={handleBuyBluk}
+        onSell={handleSellBluk}
+      />
       <div className='row'>
         <div className='col-12'>
           <div>
@@ -106,7 +191,6 @@ export const CoinsList = () => {
                 type='text'
                 placeholder='Search'
                 onChange={(event) => setSearchText(event.target.value)}
-                endAdornment={<i className='bi bi-upload fs-3'></i>}
               />
             </div>
           </div>
@@ -128,13 +212,16 @@ export const CoinsList = () => {
                   scrollThreshold='100px'
                   height='100%'
                 >
-                  <div className='row g-10'>
-                    {coinsList.map((coin) => (
+                  <div className='row g-10 w-100 m-auto'>
+                    {map(coinsList, (coin) => (
                       <CoinCard
                         key={coin.symbol}
                         coin={coin}
                         onSelect={handleSelect}
                         isChecked={coin.isSelect ? coin.isSelect : false}
+                        onBuy={handleBuySingle}
+                        onSell={handleSellSingle}
+                        onCancel={handleCancelSingle}
                       />
                     ))}
                   </div>
@@ -144,24 +231,40 @@ export const CoinsList = () => {
             {error && <CustomAlert open={true} variant='danger' text={error} />}
           </div>
         </div>
-        {/* <div className='col-md-4'>
-          <FormModel />
-        </div> */}
       </div>
       <CustomModel
-        title='Cancel bid!'
+        title={`Cancel Bid ${singleSelectedBid}`}
         confirmText='Cancel'
+        closeText='Close'
         confirmVariant='danger'
         body='Are You Sure?'
         show={showModel}
         onHide={() => setShowModel(false)}
-        onConfirm={handleConfirm}
+        onConfirm={handleConfirmCancellation}
       />
+
+      <FormModel
+        title={showBuySellForm.type}
+        show={showBuySellForm.show}
+        onHide={handleHideFormModel}
+        type={showBuySellForm.type}
+        maxPrice={price.maxPrice}
+        minPrice={price.minPrice}
+        maxQuantity={price.maxQuantity}
+        onSubmit={handleSubmit}
+      />
+
       <CustomAlert
-        onHide={() => setShowAlert(false)}
-        open={showAlert}
-        text='Successfully Canceled!'
-        variant='success'
+        onHide={() =>
+          setShowAlert({
+            show: false,
+            text: '',
+            variant: '',
+          })
+        }
+        open={showAlert.show}
+        text={showAlert.text}
+        variant={showAlert.variant}
       />
     </div>
   )

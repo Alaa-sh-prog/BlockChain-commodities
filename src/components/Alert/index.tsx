@@ -1,5 +1,16 @@
+export type VariantType =
+  | 'primary'
+  | 'secondary'
+  | 'success'
+  | 'danger'
+  | 'warning'
+  | 'info'
+  | 'light'
+  | 'dark'
+  | ''
+
 type AlertType = {
-  variant: 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'light' | 'dark'
+  variant: VariantType
   text: string
   open: boolean
   onHide?: () => void
